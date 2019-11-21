@@ -7,29 +7,28 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/add').post((req, res) => {
+router.route('/login').post((req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    User.findOne({username})
+        .then(user => {
+            if(user.password == password) {
+                res.json(user);
+            } else {
+                res.json('error');
+            }
+        })
+        .catch(err => res.status(400).json('error'));
+})
+
+router.route('/signup').post((req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const newUser = new User({username, password});
 
     newUser.save()
         .then(() => res.json(newUser))
-        .catch(err => res.status(400).json('Error: ' + err));
-});
-
-router.route('/login').post((req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    User.findOne({username: username})
-        .then(user => {
-            if(user.password == password) {
-                res.json(user);
-            } else {
-                res.json('unauthorized');
-            }
-        })
         .catch(err => res.status(400).json('error'));
-
 })
 
 module.exports = router;
